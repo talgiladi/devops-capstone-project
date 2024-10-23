@@ -102,7 +102,8 @@ def read_account(id):
 ######################################################################
 
 # ... place you code here to UPDATE an account ...
-@app.route("/accounts/<id>", methods=["PATCH"])
+=======
+@app.route("/accounts/<id>", methods=["PUT"])
 def update_account(id):
     """
     Updates an Account
