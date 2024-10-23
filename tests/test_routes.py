@@ -127,14 +127,22 @@ class TestAccountService(TestCase):
 
     def test_update_account(self):
         """It should Update an existing account"""
+
+        #create account
+        account = self._create_accounts(1)[0]
+        #save the id
+        id = account.id
+        #make changes
         account = AccountFactory()
-        response = self.client.post(
-            BASE_URL,
+
+        #act
+        response = self.client.patch(
+            f"{BASE_URL}/{id}",
             json=account.serialize(),
             content_type="application/json"
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+       
         # Make sure location header is set
         location = response.headers.get("Location", None)
         self.assertIsNotNone(location)
@@ -146,6 +154,30 @@ class TestAccountService(TestCase):
         self.assertEqual(new_account["address"], account.address)
         self.assertEqual(new_account["phone_number"], account.phone_number)
         self.assertEqual(new_account["date_joined"], str(account.date_joined))
+
+    def test_method_not_allowed(self):
+        """It should not allow an illegal method call"""
+        resp = self.client.delete(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        
+    def test_update_non_existing_account(self):
+        """It should return 404 error"""
+
+        #create account
+        account = self._create_accounts(1)[0]
+        #save the id
+        id = account.id
+        #make changes
+        account = AccountFactory()
+
+        #act
+        response = self.client.patch(
+            f"{BASE_URL}/{id + 2}",
+            json=account.serialize(),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+       
 
     def test_get_account(self):
         """It should Read a single Account"""
