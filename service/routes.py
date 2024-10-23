@@ -62,14 +62,41 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to LIST accounts ...
-
-
+@app.route("/accounts", methods = ["GET"])
+def list_accounts():
+    """
+    Lists all of the accounts
+    This endpoint will list all of the accounts
+    """
+    app.logger.info("Request to list all accounts")
+    account = Account()
+    accounts = account.all()
+    json_list = []
+    for a in accounts:
+        json_list.append(a.serialize())
+    
+    return make_response(
+        jsonify(json_list), status.HTTP_200_OK
+    )
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
 
 # ... place you code here to READ an account ...
-
+@app.route("/accounts/<id>", methods = ["GET"])
+def read_account(id):
+    """
+    Read account data
+    This endpoint will read account data by id
+    """
+    app.logger.info("Request to read account data")
+    account = Account()
+    account = account.find(id)
+    if (account is None):
+        return "Account not found", status.HTTP_404_NOT_FOUND
+    return make_response(
+        jsonify(account.serialize()), status.HTTP_200_OK
+    )
 
 ######################################################################
 # UPDATE AN EXISTING ACCOUNT
@@ -83,7 +110,21 @@ def create_accounts():
 ######################################################################
 
 # ... place you code here to DELETE an account ...
-
+@app.route("/accounts/<id>", methods = ["DELETE"])
+def delete_account(id):
+    """
+    Delate account data
+    This endpoint will deleate account by id
+    """
+    app.logger.info("Request to delete account")
+    account = Account()
+    account = account.find(id)
+    if (account is None):
+        return "Account not found", status.HTTP_404_NOT_FOUND
+    account.delete()
+    return make_response(
+        jsonify(account.serialize()), status.HTTP_200_OK
+    )
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
